@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; // Import the hook to get the current path
 import { ConnectButton, lightTheme } from "thirdweb/react";
+import ethLogo from "@/public/ethLogo.png"
 
 export default function Navbar() {
   const pathname = usePathname(); // Get the current path
@@ -15,7 +16,7 @@ export default function Navbar() {
         {/* Logo Image (Clickable to mainpage) */}
         <Link href="/mainpage">
           <Image
-            src="/ethLogo.png" 
+            src={ethLogo} 
             alt="Logo"
             width={50} 
             height={50} 
