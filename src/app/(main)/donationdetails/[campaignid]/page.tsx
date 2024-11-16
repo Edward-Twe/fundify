@@ -350,7 +350,7 @@ export default function Component() {
               Back Home
             </Button>
             {
-              userAddress == campaign.owner ? <Button variant="outline" className="rounded-full px-8 py-2" disabled={!(campaign.state == "Successful" || campaign.currentAmount != campaign.goal)} onClick={withraw}>
+              userAddress == campaign.owner ? <Button variant="outline" className="rounded-full px-8 py-2" disabled={(campaign.state != "Successful" || campaign.currentAmount != campaign.goal)} onClick={withraw}>
               Withraw
             </Button> : <></>
             }
