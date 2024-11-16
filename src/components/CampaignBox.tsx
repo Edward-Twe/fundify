@@ -118,7 +118,7 @@ export function CampaignCard({ campaignAddress }: CampaignCardProps) {
             <span>{campaign.name}</span>
             <span
               className={`text-sm px-2 py-1 rounded ${
-                campaign.state === "Active"
+                campaign.state === "Active" || campaign.paused === true
                   ? "bg-yellow-100 text-yellow-800"
                   : campaign.state === "Successful"
                   ? "bg-blue-100 text-green-800"
@@ -126,11 +126,12 @@ export function CampaignCard({ campaignAddress }: CampaignCardProps) {
               }`}
             >
               {
-                campaign.state === "Active"
+                campaign.paused === true ? "Paused" :
+                (campaign.state === "Active"
                   ? "In Progress"
                   : campaign.state === "Successful"
                   ? "Successful"
-                  : "Failed"
+                  : "Failed")
               }
             </span>
           </CardTitle>

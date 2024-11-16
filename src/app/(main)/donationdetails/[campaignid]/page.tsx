@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle, Router, Users, XCircle } from 'lucide-react';
-import Image from 'next/image';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Router,
+  Users,
+  XCircle,
+} from "lucide-react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { DONATE_ABI, NETWORK_ID, RPC_URL } from "@/app/constants/contracts";
 import { Progress } from "@/components/ui/progress";
-import Category1 from "@/public/d1.png"
-import Category2 from "@/public/d11.png"
-import Category3 from "@/public/d2.png"
+import Category1 from "@/public/d1.png";
+import Category2 from "@/public/d11.png";
+import Category3 from "@/public/d2.png";
 import DonateDialog from "@/components/success-dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -142,13 +148,32 @@ export default function Component() {
     }
   }
 
+  async function withraw() {
+    if (!signer) return;
+
+    const contract = new ethers.Contract(
+      params.campaignid as string,
+      DONATE_ABI,
+      signer
+    );
+
+    try {
+      const tx = await contract.withraw();
+
+      const receipt = await tx.wait();
+      console.log("Transaction mined:", receipt);
+    } catch (error) {
+      console.error("Error sending transaction:", error);
+    }
+  }
+
   useEffect(() => {
     fetchCampaignDetails(params.campaignid as string).then((data) => {
       setCampaign(data);
       setLoading(false);
       connectWallet();
-    });} , [params.campaignid]
-  );
+    });
+  }, [params.campaignid]);
 
   if (loading) {
     return (
@@ -182,59 +207,97 @@ export default function Component() {
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Project Image and Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12"> {/* Larger gap between image and text */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {" "}
+            {/* Larger gap between image and text */}
             {/* Image Box with rounded edges */}
             <div className="relative flex justify-center items-center">
               <Image
-                src={params.campaignid == '0xD7FD295Fe2f1cdBe6DfCd581Bb5DeeF16D90C6F5' ? Category1 : (
-                  params.campaignid == '0xA146E5F2fdA9BFB468Ae1fB1E0a7C169a98Cf63c' ? Category2
-                : Category3)} // Replace with your actual image path
+                src={
+                  params.campaignid ==
+                  "0xD7FD295Fe2f1cdBe6DfCd581Bb5DeeF16D90C6F5"
+                    ? Category1
+                    : params.campaignid ==
+                      "0xA146E5F2fdA9BFB468Ae1fB1E0a7C169a98Cf63c"
+                    ? Category2
+                    : Category3
+                } // Replace with your actual image path
                 alt="Project Image"
                 width={900} // Set the width to match the image size
                 height={500} // Set the height to match the image size
                 className="object-cover rounded-md" // Ensures the image fills its container and maintains aspect ratio
               />
             </div>
-
             {/* Textbox beside the image */}
             <div className="space-y-4">
-              <h1 className="text-3xl md:text-4xl font-bold">{ campaign.name }</h1>
+              <h1 className="text-3xl md:text-4xl font-bold">
+                {campaign.name}
+              </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                 <span>{daysLeft} Days Left</span>
                 <span className="flex items-center gap-1">
-                  <span>{userAddress == campaign.owner ? (<Button onClick={togglePause} className={campaign.paused ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}>
-                  {campaign.paused ? (
-                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                  ) : campaign.state === "Successful" ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  ) : campaign.state === "Failed" ? (
-                    <XCircle className="h-5 w-5 text-red-500" />
-                  ) : null}
-                  <span>{campaign.paused ? "Paused" : campaign.state}</span>
-                </Button>) : <p>{campaign.paused ? (
-                    <AlertTriangle className="h-5 w-5 text-yellow-500" />
-                  ) : campaign.state === "Successful" ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  ) : campaign.state === "Failed" ? (
-                    <XCircle className="h-5 w-5 text-red-500" />
-                  ) : null}</p>}</span>
+                  <span>
+                    {userAddress == campaign.owner ? (
+                      <Button
+                        onClick={togglePause}
+                        className={
+                          campaign.paused
+                            ? "bg-red-100 text-red-800"
+                            : "bg-green-100 text-green-800"
+                        }
+                      >
+                        {campaign.paused ? (
+                          <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                        ) : campaign.state === "Successful" ? (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        ) : campaign.state === "Failed" ? (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        ) : null}
+                        <span>
+                          {campaign.paused ? "Paused" : campaign.state}
+                        </span>
+                      </Button>
+                    ) : (
+                      <p>
+                        {campaign.paused ? (
+                          <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                        ) : campaign.state === "Successful" ? (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        ) : campaign.state === "Failed" ? (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        ) : null}
+                      </p>
+                    )}
+                  </span>
                 </span>
               </div>
               <div>
-              <Progress value={progress} className="h-2 mb-2" />
-              <div className="flex justify-between text-sm">
-                <span>${campaign.currentAmount.toLocaleString()} raised</span>
-                <span>${campaign.goal.toLocaleString()} goal</span>
+                <Progress value={progress} className="h-2 mb-2" />
+                <div className="flex justify-between text-sm">
+                  <span>${campaign.currentAmount.toLocaleString()} raised</span>
+                  <span>${campaign.goal.toLocaleString()} goal</span>
+                </div>
               </div>
-            </div>
 
               {/* Justified text */}
               <p className="text-gray-600 text-justify">
-                Join us in supporting the nation&apos;s growth and development through the Tabung Harapan Malaysia. Donations and voluntary contributions are now made easier and more accessible with the option to contribute through cryptocurrency. By channeling your donation to the Accountant General of Malaysia via crypto, you are directly supporting government initiatives aimed at fostering a better, more prosperous Malaysia. 
-                Every contribution counts, no matter the size. Your generosity will help fund vital national programs, infrastructure projects, and social welfare efforts, making a meaningful impact on the lives of Malaysians. 
-
-                <strong> Donate Now and be a part of shaping the future of Malaysia with your support!</strong> {/* Make the last sentence bold */}
+                Join us in supporting the nation&apos;s growth and development
+                through the Tabung Harapan Malaysia. Donations and voluntary
+                contributions are now made easier and more accessible with the
+                option to contribute through cryptocurrency. By channeling your
+                donation to the Accountant General of Malaysia via crypto, you
+                are directly supporting government initiatives aimed at
+                fostering a better, more prosperous Malaysia. Every contribution
+                counts, no matter the size. Your generosity will help fund vital
+                national programs, infrastructure projects, and social welfare
+                efforts, making a meaningful impact on the lives of Malaysians.
+                <strong>
+                  {" "}
+                  Donate Now and be a part of shaping the future of Malaysia
+                  with your support!
+                </strong>{" "}
+                {/* Make the last sentence bold */}
               </p>
             </div>
           </div>
@@ -251,7 +314,7 @@ export default function Component() {
                 Connect Wallet
               </Button>
             ) : (
-            <DonateDialog
+              <DonateDialog
                 params={params.campaignid as string}
                 signer={signer}
                 donationInWei={donationInWei}
@@ -268,27 +331,30 @@ export default function Component() {
 
           {/* Navigation Buttons */}
           <div className="w-full">
-              <Label htmlFor="donationAmount">Donation Amount ($)</Label>
-              <Input
-                id="donationAmount"
-                type="number"
-                placeholder="Enter amount"
-                value={donationAmount}
-                onChange={(e) =>
-                  setDonationAmount(
-                    parseFloat(e.target.value) > 0 ? e.target.value : "0"
-                  )
-                }
-                className="mt-1"
-              />
-            </div>
+            <Label htmlFor="donationAmount">Donation Amount ($)</Label>
+            <Input
+              id="donationAmount"
+              type="number"
+              placeholder="Enter amount"
+              value={donationAmount}
+              onChange={(e) =>
+                setDonationAmount(
+                  parseFloat(e.target.value) > 0 ? e.target.value : "0"
+                )
+              }
+              className="mt-1"
+            />
+          </div>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              variant="outline"
-              className="rounded-full px-8 py-2"
-            >
+            <Button variant="outline" className="rounded-full px-8 py-2">
               Back Home
             </Button>
+            {
+              userAddress == campaign.owner ? <Button variant="outline" className="rounded-full px-8 py-2" disabled={!(campaign.state == "Successful" || campaign.currentAmount != campaign.goal)} onClick={withraw}>
+              Withraw
+            </Button> : <></>
+            }
+            
             <Button
               variant="outline"
               className="rounded-full px-8 py-2"
@@ -301,7 +367,7 @@ export default function Component() {
       </main>
 
       <footer className="bg-gray-800 text-center text-gray-400 py-4">
-        <div >
+        <div>
           <p>&copy; 2023 Project Donation Platform. All rights reserved.</p>
         </div>
       </footer>
