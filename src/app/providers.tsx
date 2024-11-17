@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { type ReactNode, useState } from 'react';
 import { type State, WagmiProvider } from 'wagmi';
  
-import { getConfig, scrollSepolia } from '@/lib/wagmi'; // your import path may vary
+import { getConfig, sepoliaTestnet } from '@/lib/wagmi'; // your import path may vary
  
 export function Providers(props: {
   children: ReactNode;
@@ -19,7 +19,7 @@ export function Providers(props: {
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
           apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-          chain={scrollSepolia} 
+          chain={sepoliaTestnet} 
         >
           {props.children}
         </OnchainKitProvider>
