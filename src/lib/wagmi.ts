@@ -4,10 +4,10 @@ import { coinbaseWallet } from 'wagmi/connectors';
 
 import { RPC_URL } from '@/app/constants/contracts';
 
-export const scrollSepolia = {
-  id: 534351, // Chain ID for Scroll Sepolia
-  name: 'Scroll Sepolia',
-  network: 'scroll-sepolia',
+export const sepoliaTestnet = {
+  id: 11155111, // Chain ID for Sepolia Testnet
+  name: 'Sepolia Testnet',
+  network: 'sepolia',
   nativeCurrency: {
     decimals: 18,
     name: 'Ether',
@@ -15,7 +15,7 @@ export const scrollSepolia = {
   },
   rpcUrls: {
     default: {
-      http: [RPC_URL], // RPC URL must be an array
+      http: [RPC_URL], // Replace with your Infura URL or other RPC URL
     },
     public: {
       http: [RPC_URL], // Match the `default` URL structure
@@ -23,19 +23,16 @@ export const scrollSepolia = {
   },
   blockExplorers: {
     default: {
-      name: 'Scroll Explorer',
-      url: 'https://sepolia-blockscout.scroll.io',
+      name: 'Etherscan',
+      url: 'https://eth-sepolia.blockscout.com',
     },
   },
   testnet: true,
 };
-
-
-
  
 export function getConfig() {
   return createConfig({
-    chains: [scrollSepolia], // add baseSepolia for testing
+    chains: [sepoliaTestnet], // add baseSepolia for testing
     connectors: [
       coinbaseWallet({
         appName: "OnchainKit",
